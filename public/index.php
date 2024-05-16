@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vonage SMS Sender</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,6 +25,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
         }
         .form-container {
             width: 45%;
@@ -65,13 +70,13 @@
     <div class="container">
         <div class="form-container">
             <h1>Send SMS</h1>
-            <form action="send_manual_sms.php" method="post">
+            <form id="manual-sms-form">
                 <label for="number">Phone Number:</label>
-                <input type="text" id="number" name="number"><br><br>
+                <input type="text" id="number" name="number" required><br><br>
                 <label for="name">Full Name:</label>
-                <input type="text" id="name" name="name"><br><br>
+                <input type="text" id="name" name="name" required><br><br>
                 <label for="message">Message:</label>
-                <textarea id="message" name="message"></textarea><br><br>
+                <textarea id="message" name="message" required></textarea><br><br>
                 <input type="submit" value="Send SMS">
             </form>
         </div>
@@ -79,14 +84,54 @@
             <h1>Send SMS from Google Sheets</h1>
             <form action="send_sheet_sms.php" method="post">
                 <label for="spreadsheet_id">Spreadsheet ID:</label>
-                <input type="text" id="spreadsheet_id" name="spreadsheet_id"><br><br>
+                <input type="text" id="spreadsheet_id" name="spreadsheet_id" required><br><br>
                 <label for="range">Range (e.g., Sheet1!A1:B10):</label>
-                <input type="text" id="range" name="range"><br><br>
+                <input type="text" id="range" name="range" required><br><br>
                 <label for="message">Message:</label>
-                <textarea id="message" name="message"></textarea><br><br>
+                <textarea id="message" name="message" required></textarea><br><br>
                 <input type="submit" value="Send SMS">
             </form>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="responseModalLabel">Response</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-message"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('manual-sms-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+
+            fetch('send_manual_sms.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('modal-message').innerText = data.message;
+                $('#responseModal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('modal-message').innerText = 'An error occurred: ' + error.message;
+                $('#responseModal').modal('show');
+            });
+        });
+    </script>
 </body>
 </html>
