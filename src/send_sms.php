@@ -6,7 +6,7 @@ use Vonage\Client;
 use Vonage\SMS\Message\SMS;
 
 function sendSms($to, $name, $message) {
-    $basic  = new Basic('5310ab34', 'S0TRwCB13XYpxOds');
+    $basic  = new Basic('5310ab34', 'S0TRwCB13XYpxOds'); #("API_KEY", "API_SECRET")
     $client = new Client($basic);
 
     $response = $client->sms()->send(
